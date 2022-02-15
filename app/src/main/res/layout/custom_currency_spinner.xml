@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/ll_spinner_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+
+    >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+       android:id="@+id/spinner_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+
+        android:src="@color/black"
+        android:layout_margin="10dp"
+        ></de.hdodenhof.circleimageview.CircleImageView>
+
+    <TextView
+        android:id="@+id/tv_item_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test"
+        android:textSize="20sp"
+  android:layout_marginTop="11dp"
+        android:layout_marginLeft="5dp"
+        android:fontFamily="@font/gilroy"
+        android:layout_toRightOf="@id/spinner_icon"
+        ></TextView>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginLeft="8dp"
+        android:background="@drawable/ic_baseline_arrow_down_24"
+       android:layout_gravity="right"
+      android:layout_toRightOf="@id/tv_item_spinner"
+        ></ImageView>
+
+</RelativeLayout>
