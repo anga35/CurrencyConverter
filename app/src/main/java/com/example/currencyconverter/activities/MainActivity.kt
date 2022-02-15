@@ -1,9 +1,9 @@
-package com.example.currencyconverter
+package com.example.currencyconverter.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
+import com.example.currencyconverter.R
 import com.example.currencyconverter.adapters.CurrencyItem
 import com.example.currencyconverter.adapters.CurrencySpinnerAdapter
 import com.example.currencyconverter.interfaces.CurrencyServices
@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val fromCurrencyItemList = populateCurrencyItem()
-        val toCurrencyItemList=populateCurrencyItem()
+        val fromCurrencyItemList = populateFromCurrencyItem()
+        val toCurrencyItemList=populateToCurrencyItem()
 
 
         val fromAdapter = CurrencySpinnerAdapter(this, fromCurrencyItemList)
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun populateCurrencyItem():ArrayList<CurrencyItem>{
+    private fun populateFromCurrencyItem():ArrayList<CurrencyItem>{
         val currencyItemList = ArrayList<CurrencyItem>()
 
         currencyItemList.add(CurrencyItem("EUR", R.drawable.european_flag))
@@ -48,6 +48,21 @@ class MainActivity : AppCompatActivity() {
 
         return currencyItemList
     }
+
+
+
+    private fun populateToCurrencyItem():ArrayList<CurrencyItem>{
+        val currencyItemList = ArrayList<CurrencyItem>()
+        currencyItemList.add(CurrencyItem("NGN", R.drawable.poland_flag))
+        currencyItemList.add(CurrencyItem("EUR", R.drawable.european_flag))
+        currencyItemList.add(CurrencyItem("USD", R.drawable.usa_flag))
+        currencyItemList.add(CurrencyItem("GBP", R.drawable.uk_flag))
+        currencyItemList.add(CurrencyItem("NGN", R.drawable.nigerian_flag))
+
+
+        return currencyItemList
+    }
+
 
 
     fun convertCurrencyFromAPI(from: String, to: String, amount: Int) {
