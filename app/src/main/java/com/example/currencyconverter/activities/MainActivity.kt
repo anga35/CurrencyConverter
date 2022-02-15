@@ -3,22 +3,37 @@ package com.example.currencyconverter.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import com.example.currencyconverter.Constants
 import com.example.currencyconverter.R
 import com.example.currencyconverter.adapters.CurrencyItem
 import com.example.currencyconverter.adapters.CurrencySpinnerAdapter
-import com.example.currencyconverter.interfaces.CurrencyServices
-import com.example.currencyconverter.models.LatestRatesResponse
+import com.example.currencyconverter.view_models.CurrencyViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
+    var currencyViewModel:CurrencyViewModel?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        currencyViewModel = ViewModelProvider(this).get(CurrencyViewModel::class.java)
+        currencyViewModel!!.currencyConvertLiveData!!.observe(this, {
+
+            et_toCurrency.setText(it)
+
+
+        })
+
+
         val fromCurrencyItemList = populateFromCurrencyItem()
-        val toCurrencyItemList=populateToCurrencyItem()
+        val toCurrencyItemList = populateToCurrencyItem()
 
 
         val fromAdapter = CurrencySpinnerAdapter(this, fromCurrencyItemList)
@@ -27,33 +42,150 @@ class MainActivity : AppCompatActivity() {
 
         val toAdapter = CurrencySpinnerAdapter(this, toCurrencyItemList)
         fromAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item)
-        to_spinner.adapter =toAdapter
+        to_spinner.adapter = toAdapter
 
 
-//
-//convertCurrencyFromAPI("GBP","USD",1)
+to_spinner.onItemSelectedListener=this
 
+        btn_convert.setOnClickListener {
+
+            try {
+                val convertFrom = et_fromCurrency.text.toString()
+//                val currentCurrency = (from_spinner.selectedItem as CurrencyItem)
+                val toCurrency = (to_spinner.selectedItem as CurrencyItem)
+                var selectedCurrencyValue: Float? = null
+                val currentRate = Constants!!.latestRatesResponse!!.rates
+                if (!convertFrom.isNullOrEmpty()) {
+
+                    when (toCurrency.currencyName) {
+                        "EUR" -> {
+
+                            selectedCurrencyValue = currentRate.EUR.toFloat()
+                        }
+                        "NGN" -> {
+                            selectedCurrencyValue = currentRate.NGN.toFloat()
+
+                        }
+                        "GBP" -> {
+                            selectedCurrencyValue = currentRate.GBP.toFloat()
+                        }
+                        "USD" -> {
+                            selectedCurrencyValue = currentRate.USD.toFloat()
+                        }
+                        "PLN" -> {
+                            selectedCurrencyValue = currentRate.PLN.toFloat()
+                        }
+
+                        else -> {
+                            selectedCurrencyValue = null
+                        }
+                    }
+
+                    if (selectedCurrencyValue != null) {
+
+                        tv_to_currencyHint.text=toCurrency.currencyName
+
+                        val convertedValue = convertFrom.toFloat() * selectedCurrencyValue
+
+
+                        currencyViewModel!!.currencyConvertLiveData.value = convertedValue.toString()
+
+                    }
+
+
+                }
+
+
+            }catch (e:Exception){
+                Log.d("CONVERSION_ERROR",e.stackTraceToString())
+
+showErrorSnackBar("Wrong Input,Try Again")
+
+
+            }
+
+        }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+
+
+        try {
+
+            val convertFrom = et_fromCurrency.text.toString()
+            val currentCurrency =parent!!.selectedItem as CurrencyItem
+            var selectedCurrencyValue: Float? = null
+            val currentRate = Constants!!.latestRatesResponse!!.rates
+            if (!convertFrom.isNullOrEmpty()) {
+
+                when (currentCurrency.currencyName) {
+                    "EUR" -> {
+                        selectedCurrencyValue = currentRate.EUR.toFloat()
+                    }
+                    "NGN" -> {
+                        selectedCurrencyValue = currentRate.NGN.toFloat()
+
+                    }
+                    "GBP" -> {
+                        selectedCurrencyValue = currentRate.GBP.toFloat()
+                    }
+                    "USD" -> {
+                        selectedCurrencyValue = currentRate.USD.toFloat()
+                    }
+                    "PLN" -> {
+                        selectedCurrencyValue = currentRate.PLN.toFloat()
+                    }
+
+                    else -> {
+                        selectedCurrencyValue = null
+                    }
+                }
+
+                if (selectedCurrencyValue != null) {
+
+                    tv_to_currencyHint.text=currentCurrency.currencyName
+                    val convertedValue = convertFrom.toFloat() * selectedCurrencyValue
+
+
+                    currencyViewModel!!.currencyConvertLiveData.value = convertedValue.toString()
+
+                }
+
+
+            }
+
+
+        }catch (e:Exception){
+            Log.d("CONVERSION_ERROR",e.stackTraceToString())
+
+            showErrorSnackBar("Wrong Input,Try Again")
+
+
+        }
 
     }
 
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
 
-    private fun populateFromCurrencyItem():ArrayList<CurrencyItem>{
+
+    private fun populateFromCurrencyItem(): ArrayList<CurrencyItem> {
         val currencyItemList = ArrayList<CurrencyItem>()
 
         currencyItemList.add(CurrencyItem("EUR", R.drawable.european_flag))
         currencyItemList.add(CurrencyItem("USD", R.drawable.usa_flag))
         currencyItemList.add(CurrencyItem("GBP", R.drawable.uk_flag))
         currencyItemList.add(CurrencyItem("NGN", R.drawable.nigerian_flag))
-        currencyItemList.add(CurrencyItem("NGN", R.drawable.poland_flag))
+        currencyItemList.add(CurrencyItem("PLN", R.drawable.poland_flag))
 
         return currencyItemList
     }
 
 
-
-    private fun populateToCurrencyItem():ArrayList<CurrencyItem>{
+    private fun populateToCurrencyItem(): ArrayList<CurrencyItem> {
         val currencyItemList = ArrayList<CurrencyItem>()
-        currencyItemList.add(CurrencyItem("NGN", R.drawable.poland_flag))
+        currencyItemList.add(CurrencyItem("PLN", R.drawable.poland_flag))
         currencyItemList.add(CurrencyItem("EUR", R.drawable.european_flag))
         currencyItemList.add(CurrencyItem("USD", R.drawable.usa_flag))
         currencyItemList.add(CurrencyItem("GBP", R.drawable.uk_flag))
@@ -63,34 +195,11 @@ class MainActivity : AppCompatActivity() {
         return currencyItemList
     }
 
-
-
-    fun convertCurrencyFromAPI(from: String, to: String, amount: Int) {
-
-        var retrofit = Retrofit.Builder().baseUrl("http://data.fixer.io/api/")
-                .addConverterFactory(GsonConverterFactory.create()).build()
-
-        var service: CurrencyServices = retrofit.create(CurrencyServices::class.java)
-
-        val call = service.convertCurrency()
-        call.enqueue(object : Callback<LatestRatesResponse> {
-            override fun onResponse(
-                    call: Call<LatestRatesResponse>,
-                    response: Response<LatestRatesResponse>
-            ) {
-                val latestResponse = response.body()
-
-
-            }
-
-            override fun onFailure(call: Call<LatestRatesResponse>, t: Throwable) {
-                Log.d("ERRORR", t.stackTraceToString())
-            }
-
-
-        })
-
-
+    fun showErrorSnackBar(message:String){
+        val snackBar= Snackbar.make(findViewById(android.R.id.content),message, Snackbar.LENGTH_LONG)
+        val snackBarView=snackBar.view
+        snackBarView.setBackgroundColor(ContextCompat.getColor(this,R.color.my_green)
+        )
+        snackBar.show()
     }
-
 }

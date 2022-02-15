@@ -1,4 +1,4 @@
-package com.example.currencyconverter.models
+package com.example.currencyconverter.data_models
 
 data class Rates(
     val AED: String,

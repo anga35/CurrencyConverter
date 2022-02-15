@@ -88,6 +88,7 @@
             android:maxLength="21"
             android:inputType="numberDecimal"
             android:paddingLeft="10dp"
+            android:fontFamily="@font/gilroy"
             ></EditText>
 
 
@@ -128,15 +129,19 @@
             android:layout_height="65dp"
             android:maxLines="21"
             android:background="@drawable/edit_text_bg"
-            android:inputType="numberDecimal"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:cursorVisible="false"
             android:maxLength="23"
-
+android:fontFamily="@font/gilroy"
 
             ></EditText>
 
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/tv_to_currencyHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PLN"

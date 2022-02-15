@@ -1,7 +1,7 @@
 package com.example.currencyconverter.interfaces
 
 import com.example.currencyconverter.Constants
-import com.example.currencyconverter.models.LatestRatesResponse
+import com.example.currencyconverter.data_models.LatestRatesResponse
 import retrofit2.Call
 import retrofit2.http.GET
 
